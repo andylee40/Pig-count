@@ -21,11 +21,10 @@ description: 影像辨識
 
 ### 影片展示：
 
-
-<iframe src="https://drive.google.com/file/d/1_MzsgQX6vFNpA8clFMWR2UDpyOUqgtfr/preview" width="640" height="360" allow="autoplay"></iframe>
+<video src="./videos/屠宰場豬隻數量模型預測.mp4" controls muted=true autoplay=true width=100%></video>
 
 <br>
 
 ### 現場實際應用展示：
 
-<iframe src="https://drive.google.com/file/d/1z0F5O50wZtJb8EZZMRvrX60kIAZmkklq/preview" width="640" height="360" allow="autoplay"></iframe>
+<video src="./videos/屠宰場點豬與體表溫度監測情境影片.mp4" controls muted=true autoplay=true width=100%></video>
