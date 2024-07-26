@@ -20,8 +20,7 @@ description: 影像辨識
 <br>
 
 ### 影片展示：
-
-![](https://raw.githubusercontent.com/andylee40/Pig-count/main/videos/屠宰場豬隻數量模型預測.mp4)
+[![Watch the video](https://raw.githubusercontent.com/andylee40/Pig-count/main/videos/屠宰場豬隻數量模型預測.png)](https://raw.githubusercontent.com/andylee40/Pig-count/main/videos/屠宰場豬隻數量模型預測.mp4)
 <br>
 
 ### 現場實際應用展示：
