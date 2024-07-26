@@ -21,8 +21,7 @@ description: 影像辨識
 
 ### 影片展示：
 
-<video src="https://raw.githubusercontent.com/andylee40/Pig-count/main/videos/屠宰場豬隻數量模型預測.mp4" controls muted=true autoplay=true width=100%></video>
-
+![](https://raw.githubusercontent.com/andylee40/Pig-count/main/videos/屠宰場豬隻數量模型預測.mp4)
 <br>
 
 ### 現場實際應用展示：
