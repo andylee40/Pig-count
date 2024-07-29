@@ -20,9 +20,13 @@ description: 影像辨識
 <br>
 
 ### 影片展示：
-<iframe src="https://drive.google.com/file/d/1_MzsgQX6vFNpA8clFMWR2UDpyOUqgtfr/preview" width="640" height="480" allow="autoplay"></iframe>
+
+https://github.com/user-attachments/assets/6f9e0ab9-2919-4527-a10e-dc9bcecf9317
+
+
 <br>
 
 ### 現場實際應用展示：
 
-<video src="https://raw.githubusercontent.com/andylee40/Pig-count/main/videos/屠宰場點豬與體表溫度監測情境影片.mp4" controls muted=true autoplay=true width=100%></video>
+https://github.com/user-attachments/assets/f42d5254-81c4-4997-85ee-11df9ddf3405
+
