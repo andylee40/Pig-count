@@ -6,7 +6,6 @@
 
 from collections import OrderedDict
 from ByteTrack.yolox.tracker.byte_tracker import BYTETracker
-
 import os, sys
 import time
 import os
@@ -32,30 +31,6 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 from tqdm import tqdm
-
-
-
-# In[ ]:
-
-
-#將資料寫進資料庫
-def tosql(start,end,count):
-    try:
-        mydb = mysql.connector.connect(
-            host="203.145.215.249",
-            user="1092135",
-            password="My%password123",
-            database="heatstress"
-        )
-        mycursor = mydb.cursor()
-        sql = "INSERT INTO pig_count (start,end,count) VALUES (%s, %s, %s)"
-        val = (start,end,count)
-        mycursor.execute(sql, val)
-        mydb.commit()
-        print('資料匯入成功')
-    #     print("time:{}, temp:{}, record_inserted:{}".format(str(datetime.datetime.now()),self.error[-1],mycursor.rowcount))
-    except:
-        pass
 
 #偵測車子圖片轉換
 def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True, stride=32):
@@ -90,7 +65,7 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scale
     img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
     return img, ratio, (dw, dh)
 
-weights = '/home/u7412932/multiple_car/yolov7/runs/train/yolov7_multi_2024_shuffle/weights/best.pt'
+weights = './best.pt'
 # device = select_device('0')
 device = torch.device('cuda:1')
 #device = select_device('cpu')
@@ -129,16 +104,15 @@ def count_pig_v2(model=model):
     model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))
     names = model.module.names if hasattr(model, 'module') else model.names
 
-    # source='rtsp://root:Admin1234@59.125.76.241:5540/live1s1.sdp'
-    source = '/home/u7412932/yolo2024/test/20240228_2.mkv'
+    source = '20240228_2.mkv' ## or rtsp
     cudnn.benchmark=True
-    # dataset = LoadStreams(source, img_size=imgsz, stride=stride)
+    # dataset = LoadStreams(source, img_size=imgsz, stride=stride) ## when rtsp
     dataset = LoadImages(source, img_size=imgsz, stride=stride)
     start=datetime.datetime.now()
     svefile = datetime.datetime.strftime(start,'%Y-%m-%d %H:%M:%S').replace('-','_')
     svefile = svefile.replace(':','_') 
     svefile = svefile.replace(' ','_')+'.mp4'
-    save_path = '/home/u7412932/multiple_car/yolov7/{}'.format(svefile)
+    save_path = './{}'.format(svefile)
     
     last_api_call_time = datetime.datetime.now()  # 初始化最後一次API調用時間
     
@@ -333,26 +307,7 @@ def count_pig_v2(model=model):
                     #tracking-------------------------------
                     save2.append(save)
                     
-            #api_url = 'http://phews-hry.agri-twin.tw:9000/update_count'
             print("豬隻總數量:{}".format(str(count_pig)))
-            #response = requests.post(api_url, json={'count': count_pig})
-            #if response.status_code == 200:
-                #print(f'成功更新 count 至 {count_pig}')
-            #else:
-                #print(f'更新失敗：{response.text}')
-                
-             # 每秒發送API請求
-            # current_time = datetime.datetime.now()
-            # if (current_time - last_api_call_time).total_seconds() >= 1:
-            #     api_url = 'http://phews-hry.agri-twin.tw:9000/update_count'
-            #     print("豬豬總數量:{}".format(str(count_pig)))
-            #     response = requests.post(api_url, json={'count': count_pig})
-            #     if response.status_code == 200:
-            #         print(f'成功更新 count 至 {count_pig}')
-            #     else:
-            #         print(f'更新失敗：{response.text}')
-            #     last_api_call_time = current_time  # 更新最後一次API調用時間
-
             cv2.line(im0s, (count_line,0), (count_line,1080), (0,0,255), 7)
             cv2.rectangle(im0s, (1520,1000), (1920, 1080), (255, 204, 255), -1)
             cv2.putText(im0s, 'pig counts:{}'.format(count_pig), (1520, 1050), cv2.FONT_HERSHEY_SIMPLEX,
@@ -368,9 +323,7 @@ def count_pig_v2(model=model):
                 vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'MP4V'), fps, (w, h))
             vid_writer.write(im0s)
         vid_writer.release()
-    # print('/home/u7412932/yolo2024/test/{}'.format(svefile))
-    # shutil.move('/home/u7412932/multiple_car/yolov7/{}'.format(svefile), '/home/u7412932/yolo2024/test/{}'.format(svefile))
-        
+
         
 count_pig_v2(model=model)
 torch.cuda.empty_cache()
