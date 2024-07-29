@@ -1,0 +1,24 @@
+YOLOR 🚀 2023-6-9 torch 2.0.1+cu117 CUDA:0 (Tesla V100-SXM2-32GB, 32510.6875MB)
+
+/work/u7412932/myenv/.package_multiple_pig_nchc_conda/envs/multiple_pig/lib/python3.8/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3483.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+Model Summary: 314 layers, 36492560 parameters, 6194944 gradients, 103.2 GFLOPS
+Namespace(augment=False, batch_size=8, conf_thres=0.6, data='/home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/data.yaml', device='0', exist_ok=False, img_size=640, iou_thres=0.65, name='yolov7_multi_test', no_trace=False, project='runs/test', save_conf=False, save_hybrid=False, save_json=False, save_txt=False, single_cls=False, task='test', v5_metric=False, verbose=False, weights=['/home/u7412932/multiple_car/yolov7/runs/train/yolov7_multi/weights/best.pt'])
+Fusing layers... 
+RepConv.fuse_repvgg_block
+RepConv.fuse_repvgg_block
+RepConv.fuse_repvgg_block
+IDetect.fuse
+ Convert model to Traced-model... 
+ traced_script_module saved! 
+ model is traced! 
+
+Scanning images:   0%|          | 0/40 [00:00<?, ?it/s][34m[1mtest: [0mScanning '/home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/test/labels' images and labels... 4 found, 0 missing, 0 empty, 0 corrupted:  10%|█         | 4/40 [00:00<00:01, 34.05it/s][34m[1mtest: [0mScanning '/home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/test/labels' images and labels... 8 found, 0 missing, 0 empty, 0 corrupted:  20%|██        | 8/40 [00:00<00:00, 34.87it/s][34m[1mtest: [0mScanning '/home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/test/labels' images and labels... 14 found, 0 missing, 0 empty, 0 corrupted:  35%|███▌      | 14/40 [00:00<00:00, 43.75it/s][34m[1mtest: [0mScanning '/home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/test/labels' images and labels... 24 found, 0 missing, 0 empty, 0 corrupted:  60%|██████    | 24/40 [00:00<00:00, 59.81it/s][34m[1mtest: [0mScanning '/home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/test/labels' images and labels... 35 found, 0 missing, 0 empty, 0 corrupted:  88%|████████▊ | 35/40 [00:00<00:00, 69.21it/s][34m[1mtest: [0mScanning '/home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/test/labels' images and labels... 40 found, 0 missing, 0 empty, 0 corrupted: 100%|██████████| 40/40 [00:00<00:00, 61.94it/s]
+[34m[1mtest: [0mNew cache created: /home/u7412932/multiple_car/yolov7/pig_heatstress_v5-3/test/labels.cache
+               Class      Images      Labels           P           R      mAP@.5  mAP@.5:.95:   0%|          | 0/5 [00:00<?, ?it/s]               Class      Images      Labels           P           R      mAP@.5  mAP@.5:.95:  20%|██        | 1/5 [00:00<00:01,  2.18it/s]               Class      Images      Labels           P           R      mAP@.5  mAP@.5:.95:  60%|██████    | 3/5 [00:00<00:00,  5.50it/s]               Class      Images      Labels           P           R      mAP@.5  mAP@.5:.95: 100%|██████████| 5/5 [00:00<00:00,  8.29it/s]               Class      Images      Labels           P           R      mAP@.5  mAP@.5:.95: 100%|██████████| 5/5 [00:00<00:00,  6.63it/s]
+                 all          40         173       0.991        0.98       0.995       0.745
+                 car          40          37           1           1           1       0.952
+              people          40          17       0.991           1           1       0.585
+                 pig          40         119       0.982       0.941       0.985       0.698
+Speed: 5.6/1.1/6.7 ms inference/NMS/total per 640x640 image at batch-size 8
+Results saved to runs/test/yolov7_multi_test
