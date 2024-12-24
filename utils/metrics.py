@@ -75,6 +75,12 @@ def ap_per_class(tp, conf, pred_cls, target_cls, v5_metric=False, plot=False, sa
         plot_mc_curve(px, r, Path(save_dir) / 'R_curve.png', names, ylabel='Recall')
 
     i = f1.mean(0).argmax()  # max F1 index
+
+    ##best confidence
+    # best_confi=px[i]
+
+    # print(len(p[:, i]))
+    # print(p[:, i])
     return p[:, i], r[:, i], ap, f1[:, i], unique_classes.astype('int32')
 
 
@@ -165,17 +171,24 @@ class ConfusionMatrix:
         try:
             import seaborn as sn
 
-            array = self.matrix / (self.matrix.sum(0).reshape(1, self.nc + 1) + 1E-6)  # normalize
-            array[array < 0.005] = np.nan  # don't annotate (would appear as 0.00)
-
             fig = plt.figure(figsize=(12, 9), tight_layout=True)
-            sn.set(font_scale=1.0 if self.nc < 50 else 0.8)  # for label size
+            sn.set(font_scale=1.5 if self.nc < 50 else 1.2)  # for overall label size
+            
             labels = (0 < len(names) < 99) and len(names) == self.nc  # apply names to ticklabels
-            sn.heatmap(array, annot=self.nc < 30, annot_kws={"size": 8}, cmap='Blues', fmt='.2f', square=True,
-                       xticklabels=names + ['background FP'] if labels else "auto",
-                       yticklabels=names + ['background FN'] if labels else "auto").set_facecolor((1, 1, 1))
-            fig.axes[0].set_xlabel('True')
-            fig.axes[0].set_ylabel('Predicted')
+            
+            # Create the heatmap with enlarged annotation text
+            ax = sn.heatmap(self.matrix, annot=True, annot_kws={"size": 16}, cmap='Blues', fmt='.0f', square=True,
+                            xticklabels=names + ['background FP'] if labels else "auto",
+                            yticklabels=names + ['background FN'] if labels else "auto")
+            
+            # Increase the font size of the axis labels (class names)
+            ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+
+            # Set labels for the axes
+            ax.set_xlabel('True', fontsize=18)
+            ax.set_ylabel('Predicted', fontsize=18)
+
             fig.savefig(Path(save_dir) / 'confusion_matrix.png', dpi=250)
         except Exception as e:
             pass

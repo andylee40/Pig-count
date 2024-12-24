@@ -158,10 +158,10 @@ class BYTETracker(object):
 
     def update(self, output_results, img_info, img_size):
         self.frame_id += 1
-        activated_starcks = []  #激活列表
-        refind_stracks = []     # 重新列表
-        lost_stracks = []       # 丟失列表
-        removed_stracks = []    # 刪除列表
+        activated_starcks = []
+        refind_stracks = []
+        lost_stracks = []
+        removed_stracks = []
 
         if output_results.shape[1] == 5:
             scores = output_results[:, 4]
@@ -173,38 +173,27 @@ class BYTETracker(object):
         img_h, img_w = img_info[0], img_info[1]
         scale = min(img_size[0] / float(img_h), img_size[1] / float(img_w))
         bboxes /= scale
-        
-        
-        # 根据框的得分进行划分
-        # 0.5高分检测框 score是cls_conf*obj_conf
-        remain_inds = scores > self.args.track_thresh
-        # 低分框
-        inds_low = scores > 0.1                      # 低分检测框最小值
-        inds_high = scores < self.args.track_thresh  # 低分检测框最大值
 
-        inds_second = np.logical_and(inds_low, inds_high)   # 0.1<score<0.5 属于低分检测框
-        
-        # 高分检测框以及置信度（cls_conf*obj_conf）
-        dets_second = bboxes[inds_second]  #remain_inds 表示高分检测框
+        remain_inds = scores > self.args.track_thresh
+        inds_low = scores > 0.1
+        inds_high = scores < self.args.track_thresh
+
+        inds_second = np.logical_and(inds_low, inds_high)
+        dets_second = bboxes[inds_second]
         dets = bboxes[remain_inds]
-        
-        # 低分检测框以及置信度（cls_conf*obj_conf）
-        scores_keep = scores[remain_inds]  #inds_second表示低分检测框
+        scores_keep = scores[remain_inds]
         scores_second = scores[inds_second]
-        
-        
-        # 将检测框初始化为 tracker
-        # bbox和score；均值、方差为None、is_activated=False、tracklet_len=0、state=0
+
         if len(dets) > 0:
             '''Detections'''
             detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s) for
-                          (tlbr, s) in zip(dets, scores_keep)]  #新的检测目标初始化为tracker  state = 0 ,is_activate = False
+                          (tlbr, s) in zip(dets, scores_keep)]
         else:
-            detections = []  #存放的目前影格中的高分偵測框
+            detections = []
 
         ''' Add newly detected tracklets to tracked_stracks'''
-        unconfirmed = [] #存放上一幀中的新的tracker
-        tracked_stracks = []  # type: list[STrack]  #存放上一幀中正常的啟動狀態的tracker
+        unconfirmed = []
+        tracked_stracks = []  # type: list[STrack]
         for track in self.tracked_stracks:
             if not track.is_activated:
                 unconfirmed.append(track)
@@ -212,21 +201,13 @@ class BYTETracker(object):
                 tracked_stracks.append(track)
 
         ''' Step 2: First association, with high score detection boxes'''
-        
-        '''
-        这里关联的（上一帧）trackers（状态是激活的），正常的，丢失的都可与高分检测框进行匹配，注意这里是没有新的，删除的轨迹进行匹配
-        若匹配到正常的tracker，则更新位置，放入activate_stracks 列表
-        若匹配到丢失的tracker，则将种类从丢失改为正常，状态改为激活，放入 refind_stracks 列表
-        '''
-        
-        # 将正常的 tracker 和 已丢失的 tracker，根据 tracker_id 放在一起
         strack_pool = joint_stracks(tracked_stracks, self.lost_stracks)
         # Predict the current location with KF
         STrack.multi_predict(strack_pool)
         dists = matching.iou_distance(strack_pool, detections)
         if not self.args.mot20:
             dists = matching.fuse_score(dists, detections)
-        matches, u_track, u_detection = matching.linear_assignment(dists, thresh=self.args.match_threshiou_distance)
+        matches, u_track, u_detection = matching.linear_assignment(dists, thresh=self.args.match_thresh)
 
         for itracked, idet in matches:
             track = strack_pool[itracked]
@@ -239,13 +220,6 @@ class BYTETracker(object):
                 refind_stracks.append(track)
 
         ''' Step 3: Second association, with low score detection boxes'''
-        
-                '''          
-                                  第二次关联，低分数检测框
-        将上一轮 strack_pool 中没有匹配到的trackers：u_track，与低分检测框（detections_second）匹。strack_pool 中是上一帧的正常的，激活状态的 tracker，以及 丢失的，激活的tracker
-        注意： u_track 会有一个种类过滤，state=1（正常的tracker） 的才会在第二次关联中匹配。丢失的（不会在第二轮中匹配，与第一次关联的区别
-        注意：新的、删除的，本来就不在 strack_pool，从而不会在 u_track中
-        '''
         # association the untrack to the low score detections
         if len(dets_second) > 0:
             '''Detections'''
@@ -273,26 +247,20 @@ class BYTETracker(object):
                 lost_stracks.append(track)
 
         '''Deal with unconfirmed tracks, usually tracks with only one beginning frame'''
-        # 第一次关联没有匹配到的高分检测框
         detections = [detections[i] for i in u_detection]
-        
-        # 与休眠状态的tracker匹配
         dists = matching.iou_distance(unconfirmed, detections)
         if not self.args.mot20:
             dists = matching.fuse_score(dists, detections)
         matches, u_unconfirmed, u_detection = matching.linear_assignment(dists, thresh=0.7)
         for itracked, idet in matches:
-            # 匹配到休眠的 tracker，将其参数和状态更新，放入到激活列表中
             unconfirmed[itracked].update(detections[idet], self.frame_id)
             activated_starcks.append(unconfirmed[itracked])
         for it in u_unconfirmed:
-            # 没有关联的tracker，种类设为3（删除种类），放入删除列表
             track = unconfirmed[it]
             track.mark_removed()
             removed_stracks.append(track)
 
         """ Step 4: Init new stracks"""
-        # 对没有匹配到的检测框判断，<0.6 的过滤掉，>0.6 更新 tracker_id，均值、方差，状态，is_activate=False
         for inew in u_detection:
             track = detections[inew]
             if track.score < self.det_thresh:
