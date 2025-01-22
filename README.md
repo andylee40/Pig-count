@@ -15,9 +15,10 @@ description: 影像辨識
 :point_right:深度學習 : YOLOv7、ByteTrack
 
 
+
 ## 影片展示：
 
-<video src="https://raw.githubusercontent.com/andylee40/Pig-count/main/videos/模型偵測影片.mp4" controls muted=true autoplay=true width=100%></video>
+<video src="https://github.com/user-attachments/assets/800a5ef7-28e6-43c0-ae08-a489cb59b9cd" controls muted=true autoplay=true width=100%></video>
 
 ## 檔案存放
 * YOLOv7與Bytetrack存放在同層目錄下
